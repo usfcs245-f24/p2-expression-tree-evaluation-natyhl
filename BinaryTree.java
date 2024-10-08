@@ -16,10 +16,12 @@ public class BinaryTree{
 
     // Root of the binary tree
     Node root;
+    static int index; //**to go through*/
 
     // Constructor
     BinaryTree() {
-        root = null;
+        this.root = null;
+        this.index = 0;
     }
 
     static boolean isOperator(char ch){
@@ -82,48 +84,50 @@ public class BinaryTree{
     }
 
     public Node buildTree(String input){
-        Stack<Node> stack = new Stack<>();
+        Node root = null;
 
-        for (int i = 0; i < input.length(); i++) {
-            if(input.charAt(i) == ')'){
-                Node right = stack.pop();
-                Node currOperator = stack.pop();
-                Node left = stack.pop();
-                currOperator.left = left;
-                currOperator.right = right;
-                stack.push(currOperator); //source of approach: chatGPT
-            }
+        while(index < input.length()){
+            if(input.charAt(index) == '('){ //start subtree
+                index++; //move on
+                root = new Node(null); //for now assign it to null, will be changed later
+                root.left = buildTree(input);
+            }else if(isOperator(input.charAt(index))){
+                root.data = Character.toString(input.charAt(index));
+                index++; //**using index to move - chatGPT */
+                root.right = buildTree(input); //because we are past operator
 
-            if(isOperator(input.charAt(i))){
-                Node temp = new Node(input);
-                stack.push(temp); //push operator to the stack
-            }else{
+            }else if(Character.isDigit(input.charAt(index)) || input.charAt(index) == '.'){ //encountered a number
                 String number = "";
-                while (Character.isDigit(input.charAt(i)) || input.charAt(i) == '.'){
-                    number += input.charAt(i); //**can you add character? or to string? */
-                    i++; //**correct? */
+                while (Character.isDigit(input.charAt(index)) || input.charAt(index) == '.'){ //get the double number
+                    number += input.charAt(index); //**can you add character? or to string? */
+                    index++;
                 }
-                stack.push(new Node(number.toString()));
+                return new Node(number);
+            }else if(input.charAt(index) == ')'){
+                index++;
+                return root;  // Finished constructing this subtree, return the current root to return to parent
+            }else{
+                index++; //skip spaces
             }
         }
-        return stack.pop(); //**?? */
+        return root;
     }
 
-    public double evaluateTree(Node root) {
+    public double evaluate(Node root) { //**useorder traversal */
         double evaluatedSum = 0;
 
         if (root.left == null && root.right == null) {
-            if(root.data.equals('+')){
+            if(root.data.equals("+")){
                 return Double.parseDouble(root.right.data) + Double.parseDouble(root.left.data);
-            }else if(root.data.equals('-')){
+            }else if(root.data.equals("-")){
                 return Double.parseDouble(root.right.data) - Double.parseDouble(root.left.data);
-            }else if(root.data.equals('*')){
+            }else if(root.data.equals("*")){
                 return Double.parseDouble(root.right.data) * Double.parseDouble(root.left.data);
-            }else if(root.data.equals('/')){
+            }else if(root.data.equals("/")){
                 return Double.parseDouble(root.right.data) / Double.parseDouble(root.left.data);
             }
         }
-        return evaluatedSum+= evaluateTree(root.left) + evaluateTree(root.right);
+        return evaluatedSum+= evaluate(root.left) + evaluate(root.right);
     }
 
 
@@ -133,7 +137,7 @@ public class BinaryTree{
     String myS = args[0];
     if(myTree.checkValid(myS)){
         myTree.buildTree(myS);
-        double answer = myTree.evaluateTree(myTree.root); //**how to pass in the root? */
+        double answer = myTree.evaluate(myTree.root); //**how to pass in the root? */
         System.out.println(answer);
     }else{
         System.out.println("The expression is invalid");
