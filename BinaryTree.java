@@ -113,21 +113,23 @@ public class BinaryTree{
         return root;
     }
 
-    public double evaluate(Node root) { //**useorder traversal */
+    public double evaluate(Node root) {
         double evaluatedSum = 0;
 
         if (root.left == null && root.right == null) {
+            return Double.parseDouble(root.data);
+        }else{
             if(root.data.equals("+")){
-                return Double.parseDouble(root.right.data) + Double.parseDouble(root.left.data);
+                evaluatedSum += evaluate(root.left) + evaluate(root.right);
             }else if(root.data.equals("-")){
-                return Double.parseDouble(root.right.data) - Double.parseDouble(root.left.data);
+                evaluatedSum += evaluate(root.left) - evaluate(root.right);
             }else if(root.data.equals("*")){
-                return Double.parseDouble(root.right.data) * Double.parseDouble(root.left.data);
+                evaluatedSum += evaluate(root.left) * evaluate(root.right);
             }else if(root.data.equals("/")){
-                return Double.parseDouble(root.right.data) / Double.parseDouble(root.left.data);
+                evaluatedSum += evaluate(root.left) / evaluate(root.right);
             }
         }
-        return evaluatedSum+= evaluate(root.left) + evaluate(root.right);
+        return evaluatedSum;
     }
 
 
