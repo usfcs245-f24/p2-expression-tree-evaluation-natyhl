@@ -144,8 +144,16 @@ public class BinaryTree{
         return evaluatedSum;
     }
 
+    public static String dashes(int count) { //**chatGPT */ - I didn't realize I have to define dashes (called "spaces" in the quiz)
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < count; i++) {
+            sb.append("-");
+        }
+        return sb.toString();
+    }
+
     public static void printPreorderIndent(BinaryTree T, Node p, int d){ //code from quiz 7, edited
-        System.out.println(spaces(2*d) + p.data);
+        System.out.println(dashes(2*d) + p.data);
          
         if (p.right != null) { //**print right first? */ or while?
             printPreorderIndent(T, p.right, d + 1);
@@ -160,7 +168,8 @@ public class BinaryTree{
     public static void main(String[] args) { //**where to put try/catch? */
     BinaryTree myTree = new BinaryTree();
 
-    String myS = args[0];
+    //String myS = args[0];
+    String myS = "(5 + 3) * (4 - 0) / (3 - 3)";
     if(myTree.checkValid(myS)){
         myTree.buildTree(myS);
         double answer = myTree.evaluate(myTree.root); //**how to pass in the root? */
