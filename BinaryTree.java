@@ -25,7 +25,7 @@ public class BinaryTree{
     }
 
     static boolean isOperator(char ch){
-        if (ch == '+' || ch == '-' || ch == '*' || ch == '/'){
+        if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^'){
             return true;
         }else{
             return false;
@@ -84,6 +84,10 @@ public class BinaryTree{
     }
 
     public Node buildTree(String input){
+        if (input.length() == 0) {
+            throw new IllegalArgumentException("Invalid expression.");
+        }
+
         Node root = null;
 
         while(index < input.length()){
@@ -106,8 +110,10 @@ public class BinaryTree{
             }else if(input.charAt(index) == ')'){
                 index++;
                 return root;  // Finished constructing this subtree, return the current root to return to parent
+            }else if(input.charAt(index) == ' '){
+                index++; //**check? //skip spaces
             }else{
-                index++; //skip spaces
+                throw new IllegalArgumentException("Invalid operator"); //throw error if invalid sign
             }
         }
         return root;
@@ -126,10 +132,28 @@ public class BinaryTree{
             }else if(root.data.equals("*")){
                 evaluatedSum += evaluate(root.left) * evaluate(root.right);
             }else if(root.data.equals("/")){
-                evaluatedSum += evaluate(root.left) / evaluate(root.right);
+                if (root.right.data.equals("0")){
+                    throw new ArithmeticException("Division by zero is not allowed.");
+                }else{
+                    evaluatedSum += evaluate(root.left) / evaluate(root.right);
+                }
+            }else if(root.data.equals("^")){
+                evaluatedSum += Math.pow(evaluate(root.left),evaluate(root.right)); //source: https://www.geeksforgeeks.org/math-pow-method-in-java-with-example/
             }
         }
         return evaluatedSum;
+    }
+
+    public static void printPreorderIndent(BinaryTree T, Node p, int d){ //code from quiz 7, edited
+        System.out.println(spaces(2*d) + p.data);
+         
+        if (p.right != null) { //**print right first? */ or while?
+            printPreorderIndent(T, p.right, d + 1);
+        }
+    
+        if (p.left != null) {
+            printPreorderIndent(T, p.left, d + 1);
+        }
     }
 
 
@@ -141,6 +165,7 @@ public class BinaryTree{
         myTree.buildTree(myS);
         double answer = myTree.evaluate(myTree.root); //**how to pass in the root? */
         System.out.println(answer);
+        myTree.printPreorderIndent(myTree,myTree.root, 0); //**check what you're passing in */
     }else{
         System.out.println("The expression is invalid");
     }
