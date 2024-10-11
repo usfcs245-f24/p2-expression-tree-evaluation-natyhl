@@ -175,7 +175,7 @@ public class BinaryTreeTest{
     BinaryTreeTest myTree = new BinaryTreeTest();
 
     //String myS = args[0];
-    String myS = "(8*(5+3))";
+    String myS = "((5 + 3) + ((4 - 0) / (3 - 1)))";
     if(myTree.checkValid(myS)){
         myTree.root = myTree.buildTree(myS);
         double answer = myTree.evaluate(myTree.root); //**how to pass in the root? */
