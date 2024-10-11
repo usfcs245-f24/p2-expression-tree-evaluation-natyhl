@@ -1,7 +1,7 @@
 import java.util.Stack;
 //source used: https://www.geeksforgeeks.org/expression-tree/
 
-public class BinaryTree{
+public class BinaryTreeTest{
 
     // Node class representing each node in the tree
     static class Node {
@@ -19,7 +19,7 @@ public class BinaryTree{
     int index;
 
     // Constructor
-    BinaryTree() {
+    BinaryTreeTest() {
         this.root = null;
         this.index = 0;
     }
@@ -103,16 +103,17 @@ public class BinaryTree{
                 } else {
                     root.data = Character.toString(input.charAt(index));
                 }
-                index++;
+                index++; //**using index to move - chatGPT */
                 root.right = buildTree(input); //because we are past operator
+                index++;
 
             }else if(Character.isDigit(input.charAt(index)) || input.charAt(index) == '.'){ //encountered a number
-                StringBuilder number = new StringBuilder(Character.toString(input.charAt(index))); //** changed to StringBuilder for efficiency and mutable strings */
-                while (index + 1 < input.length() && (Character.isDigit(input.charAt(index + 1)) || input.charAt(index + 1) == '.')) {
+                String number = Character.toString(input.charAt(index));
+                while (Character.isDigit(input.charAt(index+1)) || input.charAt(index+1) == '.'){ //get the double number
                     index++;
-                    number.append(input.charAt(index)); // append to StringBuilder
+                    number += input.charAt(index); //**can you add character? or to string? */
                 }
-                return new Node(number.toString());
+                return new Node(number);
             }else if(input.charAt(index) == ')'){
                 index++;
                 return root;  // Finished constructing this subtree, return the current root to return to parent
@@ -160,26 +161,26 @@ public class BinaryTree{
         return sb.toString();
     }
 
-    public static void printPreorderIndent(Node p, int d){ //code from quiz 7, edited
+    public static void printPreorderIndent(BinaryTreeTest T, Node p, int d){ //code from quiz 7, edited
         if (p == null) return;
 
         System.out.println(dashes(2*d) + p.data); //preorder
          
-        printPreorderIndent(p.left, d + 1); // Print left first
-        printPreorderIndent(p.right, d + 1); // Print right next
+        printPreorderIndent(T, p.left, d + 1); // Print left first
+        printPreorderIndent(T, p.right, d + 1); // Print right next
     }
 
 
     public static void main(String[] args) { //**where to put try/catch? */
-    BinaryTree myTree = new BinaryTree();
+    BinaryTreeTest myTree = new BinaryTreeTest();
 
     //String myS = args[0];
-    String myS = "(5 + 3) * (4 - 0) / (4 - 3)";
+    String myS = "(8*(5+3))";
     if(myTree.checkValid(myS)){
-        myTree.buildTree(myS);
+        myTree.root = myTree.buildTree(myS);
         double answer = myTree.evaluate(myTree.root); //**how to pass in the root? */
         System.out.println(answer);
-        myTree.printPreorderIndent(myTree.root, 0); //**check what you're passing in */
+        myTree.printPreorderIndent(myTree,myTree.root, 0); //**check what you're passing in */
     }else{
         System.out.println("The expression is invalid");
     }
