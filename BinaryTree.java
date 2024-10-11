@@ -16,7 +16,7 @@ public class BinaryTree{
 
     // Root of the binary tree
     Node root;
-    static int index; //**to go through*/
+    int index;
 
     // Constructor
     BinaryTree() {
@@ -32,7 +32,7 @@ public class BinaryTree{
         }
     }
 
-    public boolean checkValid(String s){
+    public boolean checkValid(String s){ //from previous lab
         String input = s;
         Stack<Character> stack = new Stack<>();
         boolean matched=true;
@@ -80,7 +80,7 @@ public class BinaryTree{
             }  
         }
         if(matched) {System.out.println("The parentheses do match!");}
-        return matched; //**??
+        return matched; 
     }
 
     public Node buildTree(String input){
@@ -91,20 +91,25 @@ public class BinaryTree{
         Node root = null;
 
         while(index < input.length()){
+
             if(input.charAt(index) == '('){ //start subtree
                 index++; //move on
                 root = new Node(null); //for now assign it to null, will be changed later
                 root.left = buildTree(input);
             }else if(isOperator(input.charAt(index))){
-                root.data = Character.toString(input.charAt(index));
+                if (root == null) {
+                    root = new Node(Character.toString(input.charAt(index)));
+                } else {
+                    root.data = Character.toString(input.charAt(index));
+                }
                 index++; //**using index to move - chatGPT */
                 root.right = buildTree(input); //because we are past operator
 
             }else if(Character.isDigit(input.charAt(index)) || input.charAt(index) == '.'){ //encountered a number
-                String number = "";
-                while (Character.isDigit(input.charAt(index)) || input.charAt(index) == '.'){ //get the double number
-                    number += input.charAt(index); //**can you add character? or to string? */
+                String number = Character.toString(input.charAt(index));
+                while (Character.isDigit(input.charAt(index+1)) || input.charAt(index+1) == '.'){ //get the double number
                     index++;
+                    number += input.charAt(index); //**can you add character? or to string? */
                 }
                 return new Node(number);
             }else if(input.charAt(index) == ')'){
@@ -120,28 +125,30 @@ public class BinaryTree{
     }
 
     public double evaluate(Node root) {
-        double evaluatedSum = 0;
-
         if (root.left == null && root.right == null) {
             return Double.parseDouble(root.data);
-        }else{
-            if(root.data.equals("+")){
-                evaluatedSum += evaluate(root.left) + evaluate(root.right);
-            }else if(root.data.equals("-")){
-                evaluatedSum += evaluate(root.left) - evaluate(root.right);
-            }else if(root.data.equals("*")){
-                evaluatedSum += evaluate(root.left) * evaluate(root.right);
-            }else if(root.data.equals("/")){
-                if (root.right.data.equals("0")){
-                    throw new ArithmeticException("Division by zero is not allowed.");
-                }else{
-                    evaluatedSum += evaluate(root.left) / evaluate(root.right);
-                }
-            }else if(root.data.equals("^")){
-                evaluatedSum += Math.pow(evaluate(root.left),evaluate(root.right)); //source: https://www.geeksforgeeks.org/math-pow-method-in-java-with-example/
-            }
         }
-        return evaluatedSum;
+
+            double leftValue = evaluate(root.left);
+            double rightValue = evaluate(root.right);
+
+            if(root.data.equals("+")){
+                return leftValue + rightValue;
+            }else if(root.data.equals("-")){
+                return leftValue - rightValue;
+            }else if(root.data.equals("*")){
+                return leftValue * rightValue;
+            }else if(root.data.equals("/")){
+                if (rightValue == 0){
+                    throw new ArithmeticException("Division by zero is not allowed.");
+                }
+                return leftValue / rightValue;
+            }else if(root.data.equals("^")){
+                return Math.pow(leftValue, rightValue); //source: https://www.geeksforgeeks.org/math-pow-method-in-java-with-example/
+            }
+            else{
+                throw new IllegalArgumentException("Invalid operator: ");
+            }
     }
 
     public static String dashes(int count) { //**chatGPT */ - I didn't realize I have to define dashes (called "spaces" in the quiz)
@@ -153,15 +160,12 @@ public class BinaryTree{
     }
 
     public static void printPreorderIndent(BinaryTree T, Node p, int d){ //code from quiz 7, edited
-        System.out.println(dashes(2*d) + p.data);
+        if (p == null) return;
+
+        System.out.println(dashes(2*d) + p.data); //preorder
          
-        if (p.right != null) { //**print right first? */ or while?
-            printPreorderIndent(T, p.right, d + 1);
-        }
-    
-        if (p.left != null) {
-            printPreorderIndent(T, p.left, d + 1);
-        }
+        printPreorderIndent(T, p.left, d + 1); // Print left first
+        printPreorderIndent(T, p.right, d + 1); // Print right next
     }
 
 
