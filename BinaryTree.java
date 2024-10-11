@@ -1,5 +1,5 @@
 import java.util.Stack;
-//source used: https://www.geeksforgeeks.org/expression-tree/
+//source used to understand the logic of expression tree: https://www.geeksforgeeks.org/expression-tree/
 
 public class BinaryTree{
 
@@ -96,28 +96,29 @@ public class BinaryTree{
                 index++; //move on
                 root = new Node(null); //for now assign it to null, will be changed later
                 root.left = buildTree(input);
-                index++;
+                index++; //increment index after calling buildTree
             }else if(isOperator(input.charAt(index))){
                 if (root == null) {
                     root = new Node(Character.toString(input.charAt(index)));
                 } else {
                     root.data = Character.toString(input.charAt(index));
                 }
-                index++;
+                index++; //using index to move through string - idea from chatGPT
                 root.right = buildTree(input); //because we are past operator
+                index++; //increment index after calling buildTree
 
             }else if(Character.isDigit(input.charAt(index)) || input.charAt(index) == '.'){ //encountered a number
-                StringBuilder number = new StringBuilder(Character.toString(input.charAt(index))); //** changed to StringBuilder for efficiency and mutable strings */
-                while (index + 1 < input.length() && (Character.isDigit(input.charAt(index + 1)) || input.charAt(index + 1) == '.')) {
+                String number = Character.toString(input.charAt(index));
+                while (Character.isDigit(input.charAt(index+1)) || input.charAt(index+1) == '.'){ //get the double number
                     index++;
-                    number.append(input.charAt(index)); // append to StringBuilder
+                    number += input.charAt(index); 
                 }
-                return new Node(number.toString());
+                return new Node(number);
             }else if(input.charAt(index) == ')'){
                 index++;
                 return root;  // Finished constructing this subtree, return the current root to return to parent
             }else if(input.charAt(index) == ' '){
-                index++; //**check? //skip spaces
+                index++; //skip spaces
             }else{
                 throw new IllegalArgumentException("Invalid operator"); //throw error if invalid sign
             }
@@ -152,7 +153,7 @@ public class BinaryTree{
             }
     }
 
-    public static String dashes(int count) { //**chatGPT */ - I didn't realize I have to define dashes (called "spaces" in the quiz)
+    public static String dashes(int count) { //idea from chatGPT - I didn't realize I have to define dashes (called "spaces" in the quiz)
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < count; i++) {
             sb.append("-");
@@ -160,26 +161,25 @@ public class BinaryTree{
         return sb.toString();
     }
 
-    public static void printPreorderIndent(Node p, int d){ //code from quiz 7, edited
+    public static void printPreorderIndent(BinaryTree T, Node p, int d){ //code from quiz 7, edited
         if (p == null) return;
 
         System.out.println(dashes(2*d) + p.data); //preorder
          
-        printPreorderIndent(p.left, d + 1); // Print left first
-        printPreorderIndent(p.right, d + 1); // Print right next
+        printPreorderIndent(T, p.left, d + 1); // Print left first
+        printPreorderIndent(T, p.right, d + 1); // Print right next
     }
 
 
-    public static void main(String[] args) { //**where to put try/catch? */
+    public static void main(String[] args) {
     BinaryTree myTree = new BinaryTree();
 
-    //String myS = args[0];
-    String myS = "(5 + 3) * (4 - 0) / (4 - 3)";
+    String myS = args[0];
     if(myTree.checkValid(myS)){
-        myTree.buildTree(myS);
-        double answer = myTree.evaluate(myTree.root); //**how to pass in the root? */
+        myTree.root = myTree.buildTree(myS); //have to assign the built tree to the root
+        double answer = myTree.evaluate(myTree.root);
         System.out.println(answer);
-        myTree.printPreorderIndent(myTree.root, 0); //**check what you're passing in */
+        myTree.printPreorderIndent(myTree,myTree.root, 0); 
     }else{
         System.out.println("The expression is invalid");
     }
